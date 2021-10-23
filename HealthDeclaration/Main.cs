@@ -46,6 +46,7 @@ namespace HealthDeclaration
             _initHelper = new IniHelper();
             lbMessage.Text = "";
             _webModel = new WebModel();
+            wbSamsung.ScriptErrorsSuppressed = true;
             wbSamsung.DocumentCompleted += async (s, e) => await IsSubmitForm(wbSamsung.Document);
             wbSamsung.Navigating += async (s, e) => await LoadScript();
 
@@ -75,20 +76,6 @@ namespace HealthDeclaration
                       lbMessage.Text = "Script does not exist!";
                       return;
                   }
-
-                  //var readAfter = _initHelper.Read("AfternoonTime");
-                  //if (string.IsNullOrWhiteSpace(readAfter))
-                  //    tAfternoon = DateTime.Now;
-                  //else
-                  //    tAfternoon = DateTime.ParseExact(readAfter, "HH:mm:ss dd/MM/yyyy",
-                  //    System.Globalization.CultureInfo.InvariantCulture);
-
-                  //var readMorn = _initHelper.Read("MorningTime");
-                  //if (string.IsNullOrWhiteSpace(readMorn))
-                  //    tMorning = DateTime.Now;
-                  //else
-                  //    tMorning = DateTime.ParseExact(readMorn, "HH:mm:ss dd/MM/yyyy",
-                  //    System.Globalization.CultureInfo.InvariantCulture);
 
                   if (DateTime.Now > _morning && DateTime.Now < _morning.AddHours(1))
                   {
@@ -135,13 +122,13 @@ namespace HealthDeclaration
             {
                 var tMorning = DateTime.ParseExact(_initHelper.Read("MorningTime"), "HH:mm:ss dd/MM/yyyy",
                     System.Globalization.CultureInfo.InvariantCulture);
-                lbMessage.Text = $"Tool has automatically submitted the form on morning time: {tMorning}";
+                lbMessage.Text = $"Tool has automatically submitted\nThe form on Morning time: {tMorning}";
             }
             if (_initHelper.KeyExists("AfternoonTime"))
             {
                 var tAfternoon = DateTime.ParseExact(_initHelper.Read("AfternoonTime"), "HH:mm:ss dd/MM/yyyy",
                     System.Globalization.CultureInfo.InvariantCulture);
-                lbMessage.Text = $"Tool has automatically submitted the form on morning time: {tAfternoon}";
+                lbMessage.Text = $"Tool has automatically submitted\nThe form on Afternoon time: {tAfternoon}";
             }
 
         }
@@ -494,6 +481,7 @@ namespace HealthDeclaration
                         lbMessage.Text = mess;
                         await ShowToastAsync("error", "TimDev", new string[] { mess });
                     }
+                    wbSamsung.DocumentText = web.DocumentText;
                 }
                 else
                 {

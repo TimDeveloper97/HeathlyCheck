@@ -79,7 +79,7 @@ namespace HealthDeclaration
             // 
             // btnReload
             // 
-            this.btnReload.Location = new System.Drawing.Point(414, 13);
+            this.btnReload.Location = new System.Drawing.Point(414, 9);
             this.btnReload.Name = "btnReload";
             this.btnReload.Size = new System.Drawing.Size(75, 23);
             this.btnReload.TabIndex = 3;
@@ -89,7 +89,7 @@ namespace HealthDeclaration
             // 
             // btnSubmit
             // 
-            this.btnSubmit.Location = new System.Drawing.Point(333, 13);
+            this.btnSubmit.Location = new System.Drawing.Point(414, 31);
             this.btnSubmit.Name = "btnSubmit";
             this.btnSubmit.Size = new System.Drawing.Size(75, 23);
             this.btnSubmit.TabIndex = 2;
