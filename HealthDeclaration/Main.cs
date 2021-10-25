@@ -473,7 +473,7 @@ namespace HealthDeclaration
                     {
                         _initHelper.Write(type, DateTime.Now.ToString("HH:mm:ss dd/MM/yyyy"));
                         _initHelper.Write("Script", Path.GetFileNameWithoutExtension(pCurrentScript));
-                        lbMessage.Text = $"User submit form success!\nTime:{DateTime.Now.ToString("HH:mm:ss dd/MM/yyyy")}";
+                        lbMessage.Text = $"{type} submit form success!\nTime:{DateTime.Now.ToString("HH:mm:ss dd/MM/yyyy")}";
                         await ShowToastAsync("ok", "TimDev", new string[] { "Submit form success!", DateTime.Now.ToString("HH:mm:ss dd/MM/yyyy") });
                     }
                     else
