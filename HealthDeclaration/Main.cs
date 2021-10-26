@@ -23,7 +23,9 @@ namespace HealthDeclaration
         static string _pDebug = System.IO.Path.GetDirectoryName(
       System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase).Substring(6);
         static string _pScript = _pDebug + "\\scripts\\";
+        static string _url = "COVID";
         string _pCurrentScript = null;
+        bool[] Days;
         TimerHelper _timerHelper;
         IniHelper _initHelper;
         static DateTime _morning = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day,
@@ -43,7 +45,9 @@ namespace HealthDeclaration
         #region Init
         async Task Init()
         {
+            this.Text = "Health Declaration" + $" - v{System.Reflection.Assembly.GetEntryAssembly().GetName().Version}";
             _initHelper = new IniHelper();
+            Days = new bool[7];
             lbMessage.Text = "";
             _webModel = new WebModel();
             wbSamsung.ScriptErrorsSuppressed = true;
@@ -51,7 +55,10 @@ namespace HealthDeclaration
             wbSamsung.Navigating += async (s, e) => await LoadScript();
 
             if (CommonHelper.CheckForInternetConnection())
+            {
+                InitSourceComboBox();
                 InitWeb();
+            }
             else
             {
                 await ShowToastAsync("info", "TimDev", new string[] { "Can't connect internet!" });
@@ -77,11 +84,12 @@ namespace HealthDeclaration
                       return;
                   }
 
-                  if (DateTime.Now > _morning && DateTime.Now < _morning.AddHours(1))
+                  var day = (int)DateTime.Now.DayOfWeek;
+                  if (Days[day - 1] && DateTime.Now > _morning && DateTime.Now < _morning.AddHours(1))
                   {
                       await FillScript(nscript, "MorningTime");
                   }
-                  else if (DateTime.Now > _afternoon && DateTime.Now < _afternoon.AddHours(1))
+                  if (Days[day - 1] && DateTime.Now > _afternoon && DateTime.Now < _afternoon.AddHours(1))
                   {
                       await FillScript(nscript, "AfternoonTime");
                   }
@@ -92,7 +100,28 @@ namespace HealthDeclaration
         void InitWeb()
         {
             _webModel = new WebModel();
-            wbSamsung.Navigate("https://203.254.249.240/");
+            if (cbSource.SelectedItem != null)
+                wbSamsung.Navigate("https://203.254.249.240/" + $"{_url}{cbSource.SelectedItem.ToString().ToUpper()}");
+        }
+
+        async void InitSourceComboBox()
+        {
+            var web = new WebBrowser();
+            web.Navigate("https://203.254.249.240/");
+            await Task.Delay(1000);
+            var listCombo = GetComboBoxs(web.Document.Body.InnerHtml);
+
+            if (listCombo.Count == 1)
+            {
+                var lSource = new List<string>();
+                var options = GetOptionComboBox(listCombo[0]);
+                for (int i = 1; i < options.Count(); i++)
+                {
+                    var comp = GetCompany(options[i]);
+                    lSource.Add(comp);
+                }
+                cbSource.DataSource = lSource;
+            }
         }
 
         void InitSystemTray()
@@ -131,6 +160,29 @@ namespace HealthDeclaration
                 lbMessage.Text = $"Tool has automatically submitted\nThe form on Afternoon time: {tAfternoon}";
             }
 
+            if (_initHelper.KeyExists("Days"))
+            {
+                var list = _initHelper.Read("Days");
+                foreach (var day in list.Trim().Split(','))
+                {
+                    if (!string.IsNullOrWhiteSpace(day))
+                    {
+                        Days[int.Parse(day) - 1] = true;
+                        CheckBoxDay(int.Parse(day), true);
+                    }
+                }
+            }
+        }
+
+        void CheckBoxDay(int day, bool state)
+        {
+            if (day == 1) cb2.Checked = state;
+            else if (day == 2) cb3.Checked = state;
+            else if (day == 3) cb4.Checked = state;
+            else if (day == 4) cb5.Checked = state;
+            else if (day == 5) cb6.Checked = state;
+            else if (day == 6) cb7.Checked = state;
+            else if (day == 7) cbCn.Checked = state;
         }
 
         void CheckInternet()
@@ -281,6 +333,11 @@ namespace HealthDeclaration
             }
             return null;
         }
+
+        private void cbSource_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            wbSamsung.Navigate("https://203.254.249.240/" + $"{_url}{cbSource.SelectedItem.ToString().ToUpper()}");
+        }
         #endregion
 
         #region Text
@@ -399,12 +456,13 @@ namespace HealthDeclaration
             var pCurrentScript = _pScript + nScript + ".json";
             if (!File.Exists(pCurrentScript)) return;
 
+            var webmodel = await JsonHelper<WebModel>.ReadItemAsync(pCurrentScript);
             var web = new WebBrowser();
-            web.Navigate("https://203.254.249.240/");
+            web.Navigate("https://203.254.249.240/" + $"{_url}{nScript.ToUpper()}");
             await Task.Delay(2000);
 
             #region Fill
-            var webmodel = await JsonHelper<WebModel>.ReadItemAsync(pCurrentScript);
+
             var document = web.Document;
 
             //ComboBoxs
@@ -571,6 +629,7 @@ namespace HealthDeclaration
             if (CommonHelper.CheckForInternetConnection())
             {
                 lbMessage.Text = "Reload website success!";
+                InitSourceComboBox();
                 InitWeb();
             }
             else
@@ -612,5 +671,63 @@ namespace HealthDeclaration
         #endregion
 
         #endregion
+
+        #region Days
+        void WriteList(bool[] list)
+        {
+            var outer = "";
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (list[i])
+                    outer += (i + 1) + ",";
+            }
+            _initHelper.Write("Days", outer);
+        }
+
+        private void cb2_CheckedChanged(object sender, EventArgs e)
+        {
+            Days[0] = cb2.Checked;
+            WriteList(Days);
+
+        }
+
+        private void cb3_CheckedChanged(object sender, EventArgs e)
+        {
+            Days[1] = cb3.Checked;
+            WriteList(Days);
+        }
+
+        private void cb4_CheckedChanged(object sender, EventArgs e)
+        {
+            Days[2] = cb4.Checked;
+            WriteList(Days);
+        }
+
+        private void cb5_CheckedChanged(object sender, EventArgs e)
+        {
+            Days[3] = cb5.Checked;
+            WriteList(Days);
+        }
+
+        private void cb6_CheckedChanged(object sender, EventArgs e)
+        {
+            Days[4] = cb6.Checked;
+            WriteList(Days);
+        }
+
+        private void cb7_CheckedChanged(object sender, EventArgs e)
+        {
+            Days[5] = cb7.Checked;
+            WriteList(Days);
+        }
+
+        private void cbCn_CheckedChanged(object sender, EventArgs e)
+        {
+            Days[6] = cbCn.Checked;
+            WriteList(Days);
+        }
+        #endregion
+
+
     }
 }
