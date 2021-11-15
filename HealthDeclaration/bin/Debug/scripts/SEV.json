@@ -1,11 +1,6 @@
 {
   "ComboBoxs": [
     {
-      "Id": "CompName",
-      "Index": "1",
-      "IsOnChange": true
-    },
-    {
       "Id": "SEVNote4",
       "Index": "1",
       "IsOnChange": false

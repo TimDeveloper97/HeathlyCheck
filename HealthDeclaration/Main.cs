@@ -142,7 +142,7 @@ namespace HealthDeclaration
             if (_initHelper.KeyExists("Auto"))
                 cbAuto.Checked = bool.Parse(_initHelper.Read("Auto"));
 
-            cbScripts.DataSource = GetListScript(_pCurrentScript);
+            cbScripts.DataSource = GetListScript();
 
             if (_initHelper.KeyExists("Script"))
                 cbScripts.SelectedItem = _initHelper.Read("Script");
@@ -214,7 +214,7 @@ namespace HealthDeclaration
 
         #region Check & Filter
 
-        List<string> GetListScript(string path)
+        List<string> GetListScript()
         {
             var result = new List<string>();
             foreach (var item in Directory.GetFiles(_pScript))
@@ -232,6 +232,7 @@ namespace HealthDeclaration
             {
                 if (mess.ToLower().Trim().Contains("thành công".Trim()))
                 {
+                    _pCurrentScript = cbScripts.SelectedItem.ToString();
                     #region Save
                     if (_pCurrentScript != null)
                     {
@@ -264,8 +265,7 @@ namespace HealthDeclaration
                         }
                         #endregion
 
-                        cbScripts.DataSource = GetListScript(_pCurrentScript);
-                        var result = await JsonHelper<WebModel>.WriteItemAsync(_pCurrentScript, _webModel);
+                        var result = await JsonHelper<WebModel>.WriteItemAsync(_pScript + _pCurrentScript + ".json", _webModel);
                         if (result)
                         {
                             lbMessage.Text = "Save script success";
@@ -274,6 +274,7 @@ namespace HealthDeclaration
                             await ShowToastAsync("ok", "TimDev", new string[] { "Save script success!" });
                         }
                     }
+                    else lbMessage.Text = "Fail to save scripts";
                     #endregion
                 }
                 else lbMessage.Text = mess;

@@ -11,6 +11,6 @@ C:\SCS\Tools\HealthDeclaration\HealthDeclaration\obj\Debug\HealthDeclaration.Mai
 C:\SCS\Tools\HealthDeclaration\HealthDeclaration\obj\Debug\HealthDeclaration.Properties.Resources.resources
 C:\SCS\Tools\HealthDeclaration\HealthDeclaration\obj\Debug\HealthDeclaration.csproj.GenerateResource.cache
 C:\SCS\Tools\HealthDeclaration\HealthDeclaration\obj\Debug\HealthDeclaration.csproj.CoreCompileInputs.cache
-C:\SCS\Tools\HealthDeclaration\HealthDeclaration\obj\Debug\HealthDeclaration.csproj.CopyComplete
 C:\SCS\Tools\HealthDeclaration\HealthDeclaration\obj\Debug\HealthDeclaration.exe
 C:\SCS\Tools\HealthDeclaration\HealthDeclaration\obj\Debug\HealthDeclaration.pdb
+C:\SCS\Tools\HealthDeclaration\HealthDeclaration\obj\Debug\HealthDeclaration.csproj.CopyComplete
